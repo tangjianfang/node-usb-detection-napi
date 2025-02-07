@@ -1,8 +1,11 @@
 # node-usb-detection-napi
 Refactor the existing open-source library node-usb-detection to support Node.js compatibility issues in the latest Electron versions (v3.33.0 and above).
+Note: The current modification only supports Windows.
+
+# Original version introduction
 # 🛑🛑 Deprecated 🛑🛑
 
-This library is now deprecated. We recommend using [`usb`](https://github.com/node-usb/node-usb#migrating-from-node-usb-detection) for hotplug detection instead. It supports a wider range of platforms, using a more proven codebase. 
+This library is now deprecated. We recommend using [`usb`](https://github.com/node-usb/node-usb#migrating-from-node-usb-detection) for hotplug detection instead. It supports a wider range of platforms, using a more proven codebase.
 
 For help migrating, refer to the [documentation for `usb`](https://github.com/node-usb/node-usb#migrating-from-node-usb-detection)
 

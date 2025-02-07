@@ -7,7 +7,6 @@
 #define OBJECT_ITEM_SERIAL_NUMBER "serialNumber"
 #define OBJECT_ITEM_DEVICE_ADDRESS "deviceAddress"
 
-
 static Napi::ThreadSafeFunction addedTsFunc;
 static Napi::ThreadSafeFunction removedTsFunc;
 
