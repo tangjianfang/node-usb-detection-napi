@@ -8,10 +8,13 @@
 
 // Function declarations
 void Find(const Napi::CallbackInfo& info);
-void RegisterAdded(const Napi::CallbackInfo& info);
-void RegisterRemoved(const Napi::CallbackInfo& info);
+void EIO_Find(napi_env env, void* data);
+void EIO_AfterFind(napi_env env, napi_status status, void* data);
+void PlatformInit();
 void StartMonitoring(const Napi::CallbackInfo& info);
 void StopMonitoring(const Napi::CallbackInfo& info);
+void Start();
+void Stop();
 
 // ListBaton struct for passing data in asynchronous operations
 struct ListBaton {
@@ -20,6 +23,7 @@ struct ListBaton {
     char errorString[1024];
     int vid;
     int pid;
+
     Napi::Env env;
     Napi::Promise::Deferred deferred;
 
@@ -28,21 +32,14 @@ struct ListBaton {
     }
 };
 
-// AsyncWork struct for asynchronous work
-struct AsyncWork {
-    napi_async_work work;
-    ListBaton* baton;
-};
-
+void RegisterAdded(const Napi::CallbackInfo& info);
 void NotifyAdded(ListResultItem_t* it);
+void RegisterRemoved(const Napi::CallbackInfo& info);
 void NotifyRemoved(ListResultItem_t* it);
-void PlatformInit();
-void PlatformStartMonitoring();
-void PlatformStopMonitoring();
 
-// Asynchronous work function declarations
-void EIO_Find(napi_env env, void* data);
-void EIO_AfterFind(napi_env env, napi_status status, void* data);
+// Thread-safe callbacks
+extern Napi::ThreadSafeFunction addedTsFunc;
+extern Napi::ThreadSafeFunction removedTsFunc;
 
 #endif
 

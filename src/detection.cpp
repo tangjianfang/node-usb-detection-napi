@@ -7,8 +7,30 @@
 #define OBJECT_ITEM_SERIAL_NUMBER "serialNumber"
 #define OBJECT_ITEM_DEVICE_ADDRESS "deviceAddress"
 
-static Napi::ThreadSafeFunction addedTsFunc;
-static Napi::ThreadSafeFunction removedTsFunc;
+Napi::ThreadSafeFunction addedTsFunc;
+Napi::ThreadSafeFunction removedTsFunc;
+
+// Register added callback
+void RegisterAdded(const Napi::CallbackInfo &info)
+{
+    printf("RegisterAdded\n");
+    if (info.Length() < 1 || !info[0].IsFunction())
+    {
+        throw Napi::Error::New(info.Env(), "A function parameter needs to be passed in.");
+    }
+    addedTsFunc = Napi::ThreadSafeFunction::New(info.Env(), info[0].As<Napi::Function>(), "AddedCallback", 0, 1);
+}
+
+// Register removed callback
+void RegisterRemoved(const Napi::CallbackInfo &info)
+{
+    printf("RegisterRemoved\n");
+    if (info.Length() < 1 || !info[0].IsFunction())
+    {
+        throw Napi::Error::New(info.Env(), "A function parameter needs to be passed in.");
+    }
+    removedTsFunc = Napi::ThreadSafeFunction::New(info.Env(), info[0].As<Napi::Function>(), "RemovedCallback", 0, 1);
+}
 
 // Notify JS callback for added device
 void NotifyAdded(ListResultItem_t* it) {
@@ -28,8 +50,6 @@ void NotifyAdded(ListResultItem_t* it) {
 
         jsCallback.Call({ item });
     });
-
-    addedTsFunc.Release();
 }
 
 // Notify JS callback for removed device
@@ -55,12 +75,11 @@ void NotifyRemoved(ListResultItem_t* it) {
         delete it;
     });
 
-    removedTsFunc.Release();
 }
 
 void Find(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
-
+    printf("Find\n");
     ListBaton* baton = new ListBaton(env);
 
     size_t argIndex = 0;
@@ -96,7 +115,7 @@ void EIO_AfterFind(napi_env env, napi_status status, void* data) {
     ListBaton* baton = static_cast<ListBaton*>(data);
     Napi::HandleScope scope(env);
     Napi::Env napiEnv = Napi::Env(env);  // 将 napi_env 转换为 Napi::Env
-
+    printf("EIO_AfterFind\n");
     if (baton->errorString[0]) {
         Napi::Error error = Napi::Error::New(napiEnv, baton->errorString);
         if (baton->callback.IsEmpty()) {
@@ -129,11 +148,16 @@ void EIO_AfterFind(napi_env env, napi_status status, void* data) {
 }
 
 void StartMonitoring(const Napi::CallbackInfo& args) {
-    PlatformStartMonitoring();
+    printf("StartMonitoring\n");
+    Start();
 }
 
 void StopMonitoring(const Napi::CallbackInfo& args) {
-    PlatformStopMonitoring();
+    printf("StopMonitoring\n");
+    Stop();
+
+    if(addedTsFunc) addedTsFunc.Release();
+    if(removedTsFunc) removedTsFunc.Release();
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
