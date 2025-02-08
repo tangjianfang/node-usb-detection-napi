@@ -10,6 +10,8 @@
 Napi::ThreadSafeFunction addedTsFunc;
 Napi::ThreadSafeFunction removedTsFunc;
 
+static std::atomic<bool> isInitialized{false};
+
 // Register added callback
 void RegisterAdded(const Napi::CallbackInfo &info)
 {
@@ -77,8 +79,16 @@ void NotifyRemoved(ListResultItem_t* it) {
 
 }
 
+void LazyInit() {
+    if (!isInitialized.exchange(true)) {
+        printf("[DEBUG] Lazy InitDetection\n");
+        InitDetection();
+    }
+}
+
 void Find(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
+    LazyInit();
     printf("Find\n");
     ListBaton* baton = new ListBaton(env);
 
@@ -149,6 +159,7 @@ void EIO_AfterFind(napi_env env, napi_status status, void* data) {
 
 void StartMonitoring(const Napi::CallbackInfo& args) {
     printf("StartMonitoring\n");
+    LazyInit();
     Start();
 }
 
@@ -167,7 +178,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
     exports.Set("startMonitoring", Napi::Function::New(env, StartMonitoring));
     exports.Set("stopMonitoring", Napi::Function::New(env, StopMonitoring));
 
-	PlatformInit();
+	// InitDetection();
     return exports;
 }
 

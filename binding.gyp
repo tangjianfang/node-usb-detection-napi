@@ -14,6 +14,7 @@
             "include_dirs": [
                 "<!@(node -p \"require('node-addon-api').include\")"
             ],
+            "cflags_cc": ["-fexceptions"],
             "conditions": [
                 [
                     "OS=='win'",
@@ -35,8 +36,8 @@
                     {
                         "sources": ["src/detection_mac.cpp"],
                         "libraries": [
-                            "-framework",
-                            "IOKit"
+                        "-Wl,-framework,IOKit",
+                        "-Wl,-framework,CoreFoundation"
                         ],
                         "default_configuration": "Debug",
                         "configurations": {
@@ -47,8 +48,11 @@
                                 "defines": ["NDEBUG"]
                             }
                         },
+                        "cflags": ["-fvisibility=default"],
                         "xcode_settings": {
-                            "MACOSX_DEPLOYMENT_TARGET": "10.9"
+                            "MACOSX_DEPLOYMENT_TARGET": "14.0",
+                            "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
+                            "CLANG_CXX_LIBRARY": "libc++"
                         }
                     }
                 ],

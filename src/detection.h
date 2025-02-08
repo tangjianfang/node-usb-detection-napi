@@ -10,7 +10,7 @@
 void Find(const Napi::CallbackInfo& info);
 void EIO_Find(napi_env env, void* data);
 void EIO_AfterFind(napi_env env, napi_status status, void* data);
-void PlatformInit();
+void InitDetection();
 void StartMonitoring(const Napi::CallbackInfo& info);
 void StopMonitoring(const Napi::CallbackInfo& info);
 void Start();

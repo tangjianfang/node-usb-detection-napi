@@ -371,7 +371,7 @@ void UpdateDevice(PDEV_BROADCAST_DEVICEINTERFACE pDevInf, WPARAM wParam, DeviceS
 }
 
 // Platform initialization
-void PlatformInit()
+void InitDetection()
 {
     LoadFunctions();
     BuildInitialDeviceList();
